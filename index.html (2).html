@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Path of Resilience</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-dim: #7A6230;
+      --bg: #0A0A0A;
+      --bg2: #111111;
+      --bg3: #1A1A1A;
+      --text: #F0EDE8;
+      --text-muted: #7A7570;
+      --border: #2A2A2A;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── BACKGROUND TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 100% 100%, rgba(201,168,76,0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0 24px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── FILTER TABS ── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      padding: 16px 0 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter-btn {
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0A0A0A;
+    }
+
+    /* ── QUOTE STAGE ── */
+    .quote-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .quote-wrap {
+      max-width: 680px;
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .quote-wrap.fade-out {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .quote-wrap.fade-in {
+      animation: fadeUp 0.45s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .quote-category {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      opacity: 0.85;
+    }
+
+    .quote-mark {
+      font-family: 'Playfair Display', serif;
+      font-size: 80px;
+      line-height: 0.4;
+      color: var(--gold);
+      opacity: 0.3;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .quote-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3.5vw, 36px);
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .quote-text em {
+      color: var(--gold-light);
+      font-style: italic;
+    }
+
+    .quote-divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 28px auto;
+    }
+
+    .quote-source {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .quote-source span {
+      color: var(--gold-dim);
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      transition: width 0.4s ease;
+    }
+
+    /* ── TAP HINT ── */
+    .tap-hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.6;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 0.7; }
+    }
+
+    .tap-hint svg {
+      animation: nudge 3s infinite;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      60%       { transform: translateX(4px); }
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 20px 0 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .ctrl-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .ctrl-btn.main {
+      width: 56px;
+      height: 56px;
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0A0A0A;
+    }
+
+    .ctrl-btn.main:hover {
+      background: var(--gold-light);
+      border-color: var(--gold-light);
+    }
+
+    .ctrl-btn.favorited svg {
+      fill: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── SHARE TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg3);
+      border: 1px solid var(--gold-dim);
+      color: var(--text);
+      font-size: 12px;
+      padding: 10px 20px;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── FAVORITES PANEL ── */
+    .fav-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(380px, 100vw);
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fav-panel.open {
+      transform: translateX(0);
+    }
+
+    .fav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fav-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .fav-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .fav-close:hover { color: var(--text); border-color: var(--text-muted); }
+
+    .fav-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .fav-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .fav-item:hover { border-color: var(--gold-dim); }
+
+    .fav-item-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .fav-item-tag {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+
+    .fav-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s;
+      z-index: 99;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-name">The Path of Resilience</div>
+      <div class="brand-sub">Resilience Forge</div>
+    </div>
+    <div class="header-right">
+      <div class="pill-count" id="quoteCounter">1 / 40</div>
+    </div>
+  </header>
+
+  <!-- FILTERS -->
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="discipline">Discipline</button>
+    <button class="filter-btn" data-cat="mindset">Mindset</button>
+    <button class="filter-btn" data-cat="strength">Strength</button>
+    <button class="filter-btn" data-cat="identity">Identity</button>
+    <button class="filter-btn" data-cat="faith">Faith</button>
+    <button class="filter-btn" data-cat="forge">The Forge</button>
+  </div>
+
+  <!-- QUOTE STAGE -->
+  <div class="quote-stage" id="quoteStage" onclick="nextQuote()">
+    <div class="quote-wrap fade-in" id="quoteWrap">
+      <div class="quote-category" id="quoteCat"></div>
+      <span class="quote-mark">&ldquo;</span>
+      <p class="quote-text" id="quoteText"></p>
+      <div class="quote-divider"></div>
+      <div class="quote-source" id="quoteSource"></div>
+    </div>
+
+    <div class="tap-hint" id="tapHint">
+      <span>Tap for next</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn" id="prevBtn" onclick="prevQuote(); event.stopPropagation();" title="Previous">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="ctrl-btn" id="favBtn" onclick="toggleFavorite(); event.stopPropagation();" title="Favorite">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M9 15s-6-4.35-6-8.25A3.75 3.75 0 0 1 9 4.9a3.75 3.75 0 0 1 6 1.85C15 10.65 9 15 9 15z"
+          stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" id="favIcon"/>
+      </svg>
+    </button>
+
+    <button class="ctrl-btn main" onclick="nextQuote(); event.stopPropagation();" title="Next">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M8 5l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="ctrl-btn" id="shuffleBtn" onclick="shuffleQuotes(); event.stopPropagation();" title="Shuffle">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M2 5h2.5c2 0 3 1.5 4 3s2 3 4 3H15M13 3l2 2-2 2M2 13h2.5c.8 0 1.5-.3 2.1-.8M13 11l2 2-2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="ctrl-btn" onclick="openFavorites(); event.stopPropagation();" title="Saved">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M4 2h10a1 1 0 0 1 1 1v13l-6-3-6 3V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="ctrl-btn" onclick="shareQuote(); event.stopPropagation();" title="Share">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="14" cy="4" r="1.8" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="4" cy="9" r="1.8" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="14" cy="14" r="1.8" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M5.7 10.1l6.6 2.7M12.3 5.2l-6.6 2.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- FAVORITES PANEL -->
+<div class="overlay" id="overlay" onclick="closeFavorites()"></div>
+<div class="fav-panel" id="favPanel">
+  <div class="fav-header">
+    <h2>Saved Quotes</h2>
+    <button class="fav-close" onclick="closeFavorites()">✕</button>
+  </div>
+  <div class="fav-list" id="favList"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const quotes = [
+    // DISCIPLINE
+    { text: "Discipline isn't what you do when you feel ready. It's what you do when every part of you wants to quit.", category: "discipline", source: "The Path of Resilience" },
+    { text: "You don't wait for the perfect moment. You build the perfect moment through action.", category: "discipline", source: "Resilience Forge" },
+    { text: "Consistency is the quiet language of commitment. Show up. Every single day.", category: "discipline", source: "The Path of Resilience" },
+    { text: "Pain is the tuition. Discipline is the degree. Your character is the credential.", category: "discipline", source: "Resilience Forge" },
+    { text: "The gap between who you are and who you're capable of being is closed one decision at a time.", category: "discipline", source: "The Path of Resilience" },
+    { text: "Hard days are not a sign that you're failing. They're the curriculum of becoming.", category: "discipline", source: "Resilience Forge" },
+
+    // MINDSET
+    { text: "Resilience isn't the absence of struggle. It's the refusal to be defined by it.", category: "mindset", source: "The Path of Resilience" },
+    { text: "Every setback is a setup — if you're paying attention.", category: "mindset", source: "Resilience Forge" },
+    { text: "The mind that faces darkness with gratitude is the most dangerous force on earth.", category: "mindset", source: "The Path of Resilience" },
+    { text: "What you call a breakdown, the forge calls a beginning.", category: "mindset", source: "Resilience Forge" },
+    { text: "You can't outrun your mindset. Upgrade it or surrender to it.", category: "mindset", source: "The Path of Resilience" },
+    { text: "Stop asking why this is happening to you. Start asking what it's preparing you for.", category: "mindset", source: "Resilience Forge" },
+    { text: "The story you tell yourself about your pain determines everything that comes next.", category: "mindset", source: "The Path of Resilience" },
+
+    // STRENGTH
+    { text: "Strength isn't built in comfort. It's forged in fire — the kind that burns away everything that never belonged.", category: "strength", source: "Resilience Forge" },
+    { text: "You have survived every hard day so far. That is not luck. That is power.", category: "strength", source: "The Path of Resilience" },
+    { text: "The version of you that the world needs hasn't been broken yet — it's been built.", category: "strength", source: "Resilience Forge" },
+    { text: "They saw a broken body. You showed them an unbreakable spirit.", category: "strength", source: "The Path of Resilience" },
+    { text: "Your scars are not your story's end. They're the opening line.", category: "strength", source: "Resilience Forge" },
+    { text: "Stand in your storm. Let it know who it came for.", category: "strength", source: "The Path of Resilience" },
+    { text: "Weak men fear the fire. Resilient men understand it.", category: "strength", source: "Resilience Forge" },
+
+    // IDENTITY
+    { text: "You are not your worst chapter. But you are responsible for writing the next one.", category: "identity", source: "The Path of Resilience" },
+    { text: "Identity isn't given to you. It's hammered out in the choices no one else sees you make.", category: "identity", source: "Resilience Forge" },
+    { text: "Stop performing your healing for an audience. Do the work for the one in the mirror.", category: "identity", source: "The Path of Resilience" },
+    { text: "You don't have to be who your circumstances said you'd be.", category: "identity", source: "Resilience Forge" },
+    { text: "Authenticity is the most resilient thing you can wear. It never wears out.", category: "identity", source: "The Path of Resilience" },
+    { text: "The man in the chair who moved mountains — that is who you are.", category: "identity", source: "Resilience Forge" },
+
+    // FAITH
+    { text: "Faith doesn't remove the mountain. It gives you the will to climb it anyway.", category: "faith", source: "The Path of Resilience" },
+    { text: "There is a reason you made it through. Honor that reason by getting back up.", category: "faith", source: "Resilience Forge" },
+    { text: "Purpose doesn't always feel like purpose. Sometimes it feels like the only thing keeping you breathing. That's enough.", category: "faith", source: "The Path of Resilience" },
+    { text: "Trust the process that's refining you. Gold doesn't argue with the fire.", category: "faith", source: "Resilience Forge" },
+    { text: "When you can't see the path, be still. The path hasn't moved — your sight will clear.", category: "faith", source: "The Path of Resilience" },
+
+    // THE FORGE
+    { text: "Welcome to the forge. The heat is the point.", category: "forge", source: "Resilience Forge" },
+    { text: "Iron becomes steel through pressure and heat. So do you.", category: "forge", source: "Resilience Forge" },
+    { text: "The forge doesn't ask if you're ready. It asks what you're made of.", category: "forge", source: "Resilience Forge" },
+    { text: "You entered soft. The forge will decide what leaves.", category: "forge", source: "Resilience Forge" },
+    { text: "Every hammer strike is a gift. Every fire is a teacher. Every scar is a graduation.", category: "forge", source: "Resilience Forge" },
+    { text: "This is the Resilience Forge — where broken things come to be remade stronger than before.", category: "forge", source: "Resilience Forge" },
+    { text: "You thought the trial was punishment. The forge knows it was always preparation.", category: "forge", source: "Resilience Forge" },
+    { text: "Most people run from the heat. Champions live in it.", category: "forge", source: "Resilience Forge" },
+    { text: "The forge doesn't make you. It reveals you.", category: "forge", source: "Resilience Forge" },
+    { text: "Resilience is not a trait you're born with. It's a path you choose to walk — daily, fiercely, without apology.", category: "forge", source: "The Path of Resilience" }
+  ];
+
+  let activeCategory = 'all';
+  let filtered = [...quotes];
+  let index = 0;
+  let favorites = JSON.parse(localStorage.getItem('rq_favorites') || '[]');
+  let isAnimating = false;
+
+  function getFiltered() {
+    return activeCategory === 'all' ? quotes : quotes.filter(q => q.category === activeCategory);
+  }
+
+  function renderQuote(fade = true) {
+    const wrap = document.getElementById('quoteWrap');
+    const q = filtered[index];
+    if (!q) return;
+
+    document.getElementById('quoteCat').textContent = q.category;
+    document.getElementById('quoteText').innerHTML = q.text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    document.getElementById('quoteSource').innerHTML = `— <span>${q.source}</span>`;
+    document.getElementById('quoteCounter').textContent = `${index + 1} / ${filtered.length}`;
+    document.getElementById('progressFill').style.width = `${((index + 1) / filtered.length) * 100}%`;
+
+    // favorite state
+    const isFav = favorites.some(f => f.text === q.text);
+    const favBtn = document.getElementById('favBtn');
+    const favIcon = document.getElementById('favIcon');
+    favBtn.classList.toggle('favorited', isFav);
+    favIcon.style.fill = isFav ? 'var(--gold)' : 'none';
+    favIcon.style.stroke = isFav ? 'var(--gold)' : 'currentColor';
+
+    if (fade) {
+      wrap.classList.remove('fade-in');
+      void wrap.offsetWidth;
+      wrap.classList.add('fade-in');
+    }
+  }
+
+  function nextQuote() {
+    if (isAnimating) return;
+    isAnimating = true;
+    index = (index + 1) % filtered.length;
+    renderQuote();
+    setTimeout(() => isAnimating = false, 400);
+  }
+
+  function prevQuote() {
+    if (isAnimating) return;
+    isAnimating = true;
+    index = (index - 1 + filtered.length) % filtered.length;
+    renderQuote();
+    setTimeout(() => isAnimating = false, 400);
+  }
+
+  function shuffleQuotes() {
+    filtered = filtered.sort(() => Math.random() - 0.5);
+    index = 0;
+    renderQuote();
+    showToast('Shuffled ✦');
+  }
+
+  function toggleFavorite() {
+    const q = filtered[index];
+    const idx = favorites.findIndex(f => f.text === q.text);
+    if (idx === -1) {
+      favorites.push(q);
+      showToast('Saved to favorites ✦');
+    } else {
+      favorites.splice(idx, 1);
+      showToast('Removed from favorites');
+    }
+    localStorage.setItem('rq_favorites', JSON.stringify(favorites));
+    renderQuote(false);
+    renderFavList();
+  }
+
+  function openFavorites() {
+    renderFavList();
+    document.getElementById('favPanel').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
+  }
+
+  function closeFavorites() {
+    document.getElementById('favPanel').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+  }
+
+  function renderFavList() {
+    const list = document.getElementById('favList');
+    if (favorites.length === 0) {
+      list.innerHTML = '<div class="fav-empty">No saved quotes yet.<br>Tap the heart to save ones that move you.</div>';
+      return;
+    }
+    list.innerHTML = favorites.map((q, i) => `
+      <div class="fav-item" onclick="goToFavorite(${i})">
+        <div class="fav-item-text">"${q.text}"</div>
+        <div class="fav-item-tag">${q.category} · ${q.source}</div>
+      </div>
+    `).join('');
+  }
+
+  function goToFavorite(favIdx) {
+    const q = favorites[favIdx];
+    const qi = filtered.findIndex(f => f.text === q.text);
+    if (qi !== -1) index = qi;
+    else {
+      activeCategory = 'all';
+      filtered = [...quotes];
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === 'all'));
+      index = quotes.findIndex(f => f.text === q.text);
+    }
+    renderQuote();
+    closeFavorites();
+  }
+
+  function shareQuote() {
+    const q = filtered[index];
+    const text = `"${q.text}" — ${q.source}\n\n#PathOfResilience #ResilienceForge`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard ✦'));
+    } else {
+      showToast('Copy quote above to share');
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // FILTER BUTTONS
+  document.getElementById('filters').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    activeCategory = btn.dataset.cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    filtered = getFiltered();
+    index = 0;
+    renderQuote();
+  });
+
+  // KEYBOARD NAV
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextQuote(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevQuote(); }
+    if (e.key === 'f' || e.key === 'F') toggleFavorite();
+    if (e.key === 'Escape') closeFavorites();
+  });
+
+  // SWIPE SUPPORT
+  let touchStartX = 0;
+  document.getElementById('quoteStage').addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.getElementById('quoteStage').addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? nextQuote() : prevQuote(); }
+  });
+
+  // INIT
+  filtered = [...quotes];
+  renderQuote(false);
+</script>
+</body>
+</html>
